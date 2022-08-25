@@ -58,3 +58,16 @@ func MatchesSignature(obj reflect.Value, sig reflect.Value) chan reflect.Value {
 	}()
 	return ch
 }
+
+// Call calls a method with args arguments. This makes calling code cleaner. This also accepts reflect.Value.
+func Call(method reflect.Value, args ...any) []reflect.Value {
+	vArgs := make([]reflect.Value, 0, len(args))
+	for _, arg := range args {
+		if x, ok := arg.(reflect.Value); ok {
+			vArgs = append(vArgs, x)
+			continue
+		}
+		vArgs = append(vArgs, reflect.ValueOf(arg))
+	}
+	return method.Call(vArgs)
+}

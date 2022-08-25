@@ -50,10 +50,9 @@ func TestMatchesSignature(t *testing.T) {
 	b := blah{data: &strings.Builder{}}
 
 	ctx := context.Background()
-	ctxVal := reflect.ValueOf(ctx)
 
 	for method := range MatchesSignature(reflect.ValueOf(b), reflect.ValueOf(sigV)) {
-		returnVals := method.Call([]reflect.Value{ctxVal})
+		returnVals := Call(method, ctx)
 		fmt.Println(returnVals[0].String())
 	}
 
