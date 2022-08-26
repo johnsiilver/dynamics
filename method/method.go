@@ -41,6 +41,10 @@ import (
 //			returnVals := method.Call([]reflect.Value{ctxVal}
 //			fmt.Println(returnVals[0].String())
 //		}
+//
+// Caution: you may be tempted to have a method that uses this function to call a set of methods that match
+// a signature. You must be careful that the signature of that parent method does not match the signature!
+// Otherwise you will enter into a very nasty recursion.
 func MatchesSignature(obj reflect.Value, sig reflect.Value) chan reflect.Value {
 	if sig.Kind() != reflect.Func {
 		panic(fmt.Sprintf("MatchesSignature(): sig must be kind == Func, not %s", sig.Kind()))
