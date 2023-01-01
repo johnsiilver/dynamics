@@ -108,7 +108,6 @@ package demux
 import (
 	"context"
 	"fmt"
-	"log"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -417,7 +416,6 @@ func (s *Demux[K, V]) remove(id K) {
 	}
 	f.wg.Wait()
 	close(f.ch)
-	log.Println("closed id: ", id)
 
 	switch s.mutexType {
 	case Mutex, RWMutex:
@@ -482,7 +480,6 @@ func (s *Demux[K, V]) getValue(id K) (*forwarder[V], error) {
 // any open outpu channels, they are closed. This will block if until all
 // routing goroutines are closed.
 func (s *Demux[K, V]) Close() error {
-	defer log.Println("Demux Close()")
 	close(s.input)
 	s.wg.Wait()
 
@@ -555,12 +552,10 @@ func (s *Demux[K, V]) process(v V, id K, forward *forwarder[V]) (closed bool) {
 }
 
 func (s *Demux[K, V]) doCloseOnSend(v V, id K, f *forwarder[V]) {
-	log.Println("got close on send")
 	// Because this is closing, we decrement ourselves before
 	// we do the removal so that .remove() can wait for any
 	// others process() instances to close.
 	f.wg.Done()
-	log.Println("doing a remove on ", id)
 	s.remove(id)
 }
 
@@ -611,7 +606,6 @@ func NewInOrder[I constraints.Integer, V any](getID GetIDer[I, V], out chan V) *
 
 // Close closes InOrder and closes the out channel.
 func (n *InOrder[I, V]) Close() {
-	defer log.Println("order.Close() done")
 	close(n.out)
 	n.tree.Clear(false)
 }
